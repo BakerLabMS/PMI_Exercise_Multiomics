@@ -1,0 +1,30 @@
+abbrev,smi,class
+1-methylhistamine,CN1C=NC(CCN)=C1,inf
+aconitic acid,C(C(=CC(=O)O)C(=O)O)C(=O)O,TCA
+alanine,C[C@H](N)C(O)=O,AA
+allantoin,C1(C(=O)NC(=O)N1)NC(=O)N,oxstress
+aminoisobutyric acid,CC(C)(N)C(O)=O,pyr
+choline,C[N+](C)(C)CCO,diet
+citric/isocitrate,C(C(=O)O)C(CC(=O)O)(C(=O)O)O,TCA
+cystathione,C(CSCC(C(=O)O)N)C(C(=O)O)N,AA
+fumarate,C(=CC(=O)[O-])C(=O)[O-],TCA
+hippurate,C1=CC=C(C=C1)C(=O)NCC(=O)[O-],diet
+hypoxanthine,OC1=NC=NC2=C1NC=N2,ATPdeg
+inosine,OC[C@H]1O[C@H]([C@H](O)[C@@H]1O)N1C=NC2=C(O)N=CN=C12,purine
+isoleucine/leucine,CC[C@H](C)[C@H](N)C(O)=O,AA
+lactate,CC(C(=O)[O-])O,G
+malate,C(C(C(=O)[O-])O)C(=O)[O-],TCA
+malonic acid,OC(=O)CC(O)=O,pyr
+methionine,CSCCC(C(=O)O)N,AA
+niacinamide,C1=CC(=CN=C1)C(=O)N,insul
+ornithine,C(CC(C(=O)O)N)CN,AA
+panthothenate,CC(C)(CO)C(C(=O)NCCC(=O)[O-])O,Faox
+proline,OC(=O)[C@H]1CCCN1,AA
+pyruvate,CC(=O)C(=O)[O-],G/TCA
+serine,N[C@@H](CO)C(O)=O,AA
+succinate,C(CC(=O)[O-])C(=O)[O-],TCA
+threonine,C[C@@H](O)[C@H](N)C(O)=O,AA
+trimethylamine N-oxide,C[N+](C)(C)[O-],diet
+uridine,C1=CN(C(=O)NC1=O)C2C(C(C(O2)CO)O)O,pyr
+xanthine,O=C1NC2=C(NC=N2)C(=O)N1,purine
+xanthosine,C1=NC2=C(N1C3C(C(C(O3)CO)O)O)NC(=O)NC2=O,nucleotide

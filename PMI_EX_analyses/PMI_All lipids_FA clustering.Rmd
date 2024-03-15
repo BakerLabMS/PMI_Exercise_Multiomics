@@ -1,0 +1,135 @@
+---
+title: "FA tail clustering -- Before v After PMI"
+author: "Melanie"
+output:
+  html_document:
+    toc: true # table of content true
+    toc_depth: 3  # upto three depths of headings (specified by #, ## and ###)
+    number_sections: true  ## if you want number sections at each table header
+    theme: united  # many options for theme, this one is my favorite.
+    highlight: tango  # specifies the syntax highlighting style
+    toc_float: true
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F, cache = T)
+knitr::opts_knit$set(root.dir = 'PMI_EX_data/')
+library(httr)
+library(jsonlite)
+library(fingerprint)
+library(rcdk)
+library(ggplot2)
+library(ggtree)
+library(ape)
+library(phangorn)
+library(limma)
+library(digest)
+library(pheatmap)
+library(dplyr)
+library(RColorBrewer)
+```
+
+
+```{r, message=FALSE, warning=FALSE}
+# Combine together data for healty verus control comparison
+# Combine negative and positve data sets
+mi_fn <- c("PMI_results")
+
+fn <- mi_fn[1]
+sig.df <- data.frame(matrix(nrow = 301, ncol = length(mi_fn)))
+for( i in 1 : length(mi_fn)) {
+  fn <- mi_fn[i]
+  df1<- read.csv(paste0(fn, "_neg.csv"))
+  df2<- read.csv(paste0(fn, "_pos.csv"))
+  df <- rbind(df1, df2)
+  sig.df[, i] <- (df$p_adjust*df$Flag) 
+  colnames(sig.df)[i] <- fn
+}
+
+sig.df$Lipid <- df$Lipid
+sig.df <- sig.df[c(2, 1)]
+
+lipids <- sig.df$Lipid
+sig.df$Lipid <- gsub("/", "_", sig.df$Lipid)
+
+
+sig.df <- unique(sig.df)
+
+
+
+
+sig.df[sig.df == 0] <- NA
+
+
+breaks <- seq(from=min(range(-0.005)), to=max(range(0.005)), length.out=1000)
+midpoint <- which.min(abs(breaks - 0))
+rampCol1 <- colorRampPalette(c("#14f2fa", "#00bfff", "#0f52ba"))(midpoint)
+rampCol2 <- colorRampPalette(c( "#60100b",  "#e3242b",  "#ff2400"))(1000-(midpoint))
+rampCols <- c(rampCol1,rampCol2)
+
+
+ab.set <- sig.df$Lipid
+ab.set <- sub(".*\\(" , "", ab.set)
+ab.set <- sub("\\).*" , "", ab.set)
+ab.set <- sub(".*-" , "", ab.set)
+ab.set <- sub("d" , "", ab.set)
+ab.set <-strsplit(ab.set, split = "_")
+ab.set <- unlist(ab.set)
+ab.set <- unique(ab.set)
+names(ab.set) <- c("group")
+FA <- c("00:0", "12:0", "14:0", "15:0", "16:0", "16:1", "17:0", "18:0", "18:1", "18:2", "18:3", "20:0", "20:1", "20:3", "20:4", "22:0", "22:4", "22:6", "24:1")
+ab.set <- ab.set[order(match(ab.set, FA))]
+
+lipid.set <- data.frame(stringsAsFactors = F)
+l <- ab.set[1]
+for(l in ab.set) {
+  tmp <- sig.df$Lipid[grepl(l, sig.df$Lipid)]
+  lipid.set <- rbind(lipid.set, cbind(tmp, rep(l, length(tmp))))
+}
+
+colnames(lipid.set) <- c("lipids", "group")
+length(unique(lipid.set$group))
+table(lipid.set$group)
+
+highfreq.groups <- unique(lipid.set$group)[table(lipid.set$group) > 10]
+
+lipid.set.trim <- lipid.set[lipid.set$group %in% highfreq.groups, ]
+table(droplevels(lipid.set.trim$group))
+lipid.set.trim<- filter(lipid.set.trim, group != "8:0")
+
+sig.df.full <- merge(lipid.set.trim, sig.df, by.x = "lipids", by.y = "Lipid")
+
+head(sig.df.full)
+
+sig.df.full <- sig.df.full[order(sig.df.full$group), ]
+sig.df.mat <- sig.df.full[, -(1:2)]
+sig.df.mat <- data.matrix(sig.df.mat)
+
+group <- data.frame(sig.df.full$group)
+group <- droplevels(group)
+table(group)
+
+
+group <- data.frame(sig.df.full$group)
+group <- droplevels(group)
+table(group)
+
+length(group)
+
+row.names(group) <- paste0(sig.df.full$lipids, sig.df.full$group, sep = ".")
+row.names(sig.df.mat) <- paste0(sig.df.full$lipids, sig.df.full$group, sep = ".")
+
+dim(sig.df.mat)
+length(group)
+```
+
+```{r}
+rampCols <- c(rampCol1,rampCol2)
+```
+
+
+```{r}
+pheatmap(sig.df.mat, color = rampCols, breaks = breaks,annotation_row = group, cellwidth = 50, cellheight = 10, treeheight_row = 100, treeheight_col = 100,  cluster_row = F, cluster_col = F, fontsize = 10, legend = T, filename = "PMI_Lipidomics_All Lipids_FA_pval.png")
+```

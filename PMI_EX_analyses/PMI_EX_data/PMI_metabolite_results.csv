@@ -1,0 +1,30 @@
+Metabolite,% Change IQR,range,pvalue
+1-methylhistamine,12.9,3.2 to 23.0,0.004
+aconitic acid,,,
+alanine,-22.6,-24.8 to -20.2,-0.0002
+allantoin,,,
+aminoisobutyric acid,45.5,24.9 to 65.3,0.0012
+choline,-9.4,-15.2 to -1.1,-0.0025
+citric/isocitrate,,,
+cystathione,,,
+fumarate,,,
+hippurate,,,
+hypoxanthine,301.7,136.7 to 536.1,0.0003
+inosine,51.6,7.2 to 184.0,0.0011
+isoleucine/leucine,10.6,2.1 to 18.6,0.0017
+lactate,,,
+malate,,,
+malonic acid,47.9,5.9 to 96.2,0.0022
+methionine,,,
+niacinamide,,,
+ornithine,,,
+panthothenate,,,
+proline,-4.6,-9.1 to -2.8,-0.0036
+pyruvate,,,
+serine,-10,18.8 to -9.6,-0.0015
+succinate,,,
+threonine,-7.5,-14.4 to -3.1,-0.0003
+trimethylamine N-oxide,-20.2,-27.2 to -9.6,-0.0007
+uridine,,,
+xanthine,48.1,18.7 to 82.9,0.0027
+xanthosine,,,

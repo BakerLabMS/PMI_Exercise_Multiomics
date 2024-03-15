@@ -1,0 +1,133 @@
+---
+title: "PMI_metabolite_dendrogram"
+author: "Melanie Odenkirk"
+output: html_document
+---
+This file includes the lipid FA heatmap output used to construct Figure 3b of "From Prevention to Disease Perturbations: A Multi-Omic Assessment of Exercise and Myocardial Infarctions" by Odenkirk et al.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(comment = "", tidy.opts = list(width.cutoff = 60), tidy = TRUE, echo = FALSE, include = FALSE, warning = FALSE)
+knitr::opts_knit$set(root.dir = 'PMI_EX_data/')
+  library(httr)
+  library(jsonlite)
+  library(fingerprint)
+  library(rcdk)
+  library(ggplot2)
+  library(ggtree)
+  library(ape)
+  library(phangorn)
+  library(limma)
+  library(digest)
+  library(factoextra)
+  library(NbClust)
+  library(reshape2)
+  library(scales)
+  library(dendextend)
+```
+
+
+```{r, include=FALSE}
+load("fp_PMI_EX_metabolite.rdata")
+tupgma <- upgma(fp.dist, method = "average")
+```
+
+
+```{r pressure, echo=FALSE, include=FALSE}
+
+sig.df <- data.frame(matrix(nrow = 29))
+
+df1 <- read.csv("PMI_metabolite_results.csv")
+df2 <- read.csv("EX_metabolite_results.csv")
+
+
+sig.df$PMI_metabolite_results <- df1$pvalue
+sig.df$EX_metabolite_results <- df2$pvalue
+
+sig.df$Metabolite <- df1$Metabolite
+sig.df <- sig.df[c(4, 2:3)]
+
+met <- sig.df$Metabolite
+
+rownames(sig.df) <- sig.df$Metabolite
+
+sig.df$Metabolite <- NULL
+
+sig.df[sig.df == 0] <- NA
+
+
+
+
+breaks <- seq(from=min(range(-0.005)), to=max(range(0.005)), length.out=1000)
+midpoint <- which.min(abs(breaks - 0))
+rampCol1 <- colorRampPalette(c( "#00bfff", "#0f52ba"))(midpoint)
+rampCol2 <- colorRampPalette(c( "#60100b",  "#e3242b",  "#ff2400"))(1000-(midpoint))
+rampCols <- c(rampCol1,rampCol2)
+
+```
+
+##Lipid Dendogram
+
+## Integrating code from George
+```{r, echo=FALSE}
+#color by the property (For dyes it was color) 
+sig.df_1 <- sig.df
+
+
+#load all desc.
+cmpds <- read.csv("PMI_EX_metabolite_SMILES.csv", header= TRUE)
+
+#color by the property (Using HG classification)
+sortMat2 = cmpds
+
+
+#colorby property (Property is desc. col. name like p-value)
+class = cmpds$class
+
+#cols for three tier plot
+#Easy control of color assignments. "Name" = "Color"
+#"Name" is the cell value inside original dataframe.
+
+cols10 =c("inf" = "yellowgreen","TCA" = "firebrick3", "AA" = "purple", "oxstress" = "darkcyan","pyr"= "grey",  "ATPdeg" = "black", "diet" = "forestgreen", "purine" = "gold3", "insul" = "lightskyblue", "Faox" = "royalblue1", "G" = "salmon", "G/TCA" = "violetred2","nucleotide" = "navy")
+
+
+
+to_plot3= (sig.df_1)
+                             
+names(to_plot3)="PMI_results"
+rownames(to_plot3) = rownames(sig.df_1)
+
+to_plot3= as.data.frame(cbind(sig.df_1[,c("PMI_metabolite_results")], 
+                              sig.df_1[,c("EX_metabolite_results")])) 
+names(to_plot3)=c("PMI_metabolite_results", "EX_metabolite_results")
+rownames(to_plot3) = rownames(sig.df_1)
+
+```
+
+## Pretty dendrogram
+
+```{r, echo=FALSE, fig.height=24, fig.width=16, message=FALSE, warning=FALSE, include = TRUE}
+#Generate Circular Dendrogram
+t4 <- ggtree(tupgma, layout="circular", size=1.5) 
+#%<+% is a pipe symbol to combine datasets more efficiently=
+#merging circ. dend. w/ pvalue color assignments
+t4 <- t4 %<+% cmpds +
+ geom_tippoint(aes(color=class), size=8, shape = 16, alpha = 0.9)+
+  geom_tiplab(aes(label=label, angle=angle, fontface="bold"), hjust= 0, offset = .18,  size=8)+
+  scale_color_manual(values =cols10) +
+  theme(plot.margin = unit(c(0,0,0,0), "cm"))+
+  theme(text = element_text(size = 0.01)) +
+  geom_treescale(x = NULL, y = NULL, width = 0.5, offset = 30,
+                 color = "white", linesize = 1E-100, fontsize = 1E-100)
+#plots circular dendrogram with layered heatmap
+t4 <- gheatmap(t4, sig.df_1[1], offset = 0, width = 0.12, colnames = F)  +
+  scale_fill_gradient2(low = rampCol1, high = rampCol2, mid = "black", na.value = "grey70", midpoint = 0)
+t4 <- gheatmap(t4, sig.df_1[2], offset = 0.08, width = 0.12, colnames = F)  +
+  scale_fill_gradient2(low = rampCol1, high = rampCol2, mid = "black", na.value = "grey70", midpoint = 0)
+
+
+open_tree(t4, 50) %>% rotate_tree(50)
+```
+
+
+
+
